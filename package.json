@@ -2,7 +2,7 @@
   "name": "terra-web",
   "version": "0.1.0",
   "private": true,
-  "homepage":"terra-claims.github.io",
+  "homepage":"https://terra-claims.github.io/terra-web",
   "dependencies": {
     "@material-ui/core": "^1.1.0",
     "bs-material-ui": "https://github.com/FreshGuy32/bs-material-ui.git",
