@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^1.1.0",
+    "bs-material-ui": "https://github.com/FreshGuy32/bs-material-ui.git",
+    "leaflet": "^1.3.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "reason-scripts": "0.9.0"
