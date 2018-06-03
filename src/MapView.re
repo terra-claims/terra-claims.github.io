@@ -10,6 +10,7 @@ type action =
   | SetMap(Leaflet.Map.t)
   | Move(float, float)
   | UpdateCenter(float, float)
+  /* | LocateMe */
   | Zoom(int)
   | UpdateZoom(int);
 
@@ -68,9 +69,9 @@ let make = (~setMap, _children) => {
     | Zoom(zoom) =>
       ReasonReact.SideEffects((self => zoomTo({...self.state, zoom})))
     | UpdateZoom(zoom) => ReasonReact.Update({...state, zoom})
+    /* | LocateMe => ReasonReact.SideEffects({send, state} => Location.getCurrentPosition(coords => self.send(Move(Location.latitude(coords), Location.longitude(coords))), error => Js.log(error))) */
     },
   didMount: self => {
-    Location.getCurrentPosition(coords => self.send(Move(Location.latitude(coords), Location.longitude(coords))), error => Js.log(error));
     let map = Leaflet.create_map("map");
     self.send(SetMap(map));
     let updateMove = () => {

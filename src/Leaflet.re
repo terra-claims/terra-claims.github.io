@@ -52,6 +52,11 @@ module GeoJSON = {
   [@bs.send] external getBounds : t => LatLngBounds.t = "";
 };
 
+[@bs.deriving abstract]
+type locate_options = {
+  [@bs.optional] watch: bool,
+  [@bs.optional] setView: bool,
+};
 
 module Map = {
   type t;
@@ -75,10 +80,14 @@ module Map = {
   [@bs.send] external removeLayer : (t, Layer.t) => t = "";
   [@bs.send] external removeGeoJSON : (t, GeoJSON.t) => t = "removeLayer";
   [@bs.send] external hasLayer : (t, Layer.t) => bool = "";
+
   /* Methods for Navigation */
   [@bs.send] external setView : (t, (float, float), int) => t = "";
   [@bs.send] external setZoom : (t, int) => t = "";
   [@bs.send] external fitBounds : (t, LatLngBounds.t) => t = "";
+
+  [@bs.send] external locate : (t, locate_options) => t = "";
+  [@bs.send] external stopLocate : (t) => t = "";
   
   /* Events */
   [@bs.send] external on : (t, string, unit => unit) => unit = "";
