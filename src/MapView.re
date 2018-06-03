@@ -70,7 +70,7 @@ let make = (~setMap, _children) => {
     | UpdateZoom(zoom) => ReasonReact.Update({...state, zoom})
     },
   didMount: self => {
-    /* Location.getCurrentPosition(coords => self.send(Move(Location.latitude(coords), Location.longitude(coords))), error => Js.log(error)); */
+    Location.getCurrentPosition(coords => self.send(Move(Location.latitude(coords), Location.longitude(coords))), error => Js.log(error));
     let map = Leaflet.create_map("map");
     self.send(SetMap(map));
     let updateMove = () => {
