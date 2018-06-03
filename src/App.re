@@ -1,15 +1,9 @@
 [%bs.raw {|require('./App.css')|}];
-
+open Properties;
 open Belt;
 
-type property = {
-  hash: string,
-  geoJSON: Js.Json.t,
-  layer: Leaflet.GeoJSON.t,
-};
-
 type state = {
-  properties: list(property),
+  properties: properties,
   current: option(property),
   map: option(Leaflet.Map.t),
 };
@@ -99,7 +93,7 @@ let make = _children => {
             variant=`Title color=`Inherit className="Title">
             (s("Terra Claims"))
           </MaterialUI.Typography>
-          <IpfsField />
+          <IpfsField addProperty=(property => self.send(AddProperty(property)))/>
         </MaterialUI.Toolbar>
       </MaterialUI.AppBar>
       <MapView setMap=(map => self.send(SetMap(map))) />
