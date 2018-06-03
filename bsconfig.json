@@ -1,7 +1,7 @@
 {
   "name": "reason-scripts",
   "sources": ["src"],
-  "bs-dependencies": ["reason-react", "@glennsl/bs-jest", "bs-material-ui"],
+  "bs-dependencies": ["reason-react", "@glennsl/bs-jest", "bs-material-ui", "bs-fetch"],
   "reason": {
     "react-jsx": 2
   },

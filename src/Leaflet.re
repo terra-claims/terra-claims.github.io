@@ -47,6 +47,12 @@ module LatLng = {
   [@bs.send] external toBounds : (t, int) => LatLngBounds.t = "";
 };
 
+module GeoJSON = {
+  type t;
+  [@bs.send] external getBounds : t => LatLngBounds.t = "";
+};
+
+
 module Map = {
   type t;
   /* Interaction Options */
@@ -65,11 +71,15 @@ module Map = {
   external maxBounds : t => option(LatLngBounds.t) = "";
   /* Methods for Layers and Controls */
   [@bs.send] external addLayer : (t, Layer.t) => t = "";
+  [@bs.send] external addGeoJSON : (t, GeoJSON.t) => t = "addLayer";
   [@bs.send] external removeLayer : (t, Layer.t) => t = "";
+  [@bs.send] external removeGeoJSON : (t, GeoJSON.t) => t = "removeLayer";
   [@bs.send] external hasLayer : (t, Layer.t) => bool = "";
   /* Methods for Navigation */
   [@bs.send] external setView : (t, (float, float), int) => t = "";
   [@bs.send] external setZoom : (t, int) => t = "";
+  [@bs.send] external fitBounds : (t, LatLngBounds.t) => t = "";
+  
   /* Events */
   [@bs.send] external on : (t, string, unit => unit) => unit = "";
   [@bs.send] external off : (t, string, unit => unit) => unit = "";
@@ -117,3 +127,6 @@ external point_float : (float, float, bool) => Point.t = "point";
 
 [@bs.module "leaflet"]
 external create_map : (string) => Map.t = "map";
+
+[@bs.module "leaflet"]
+external create_geo_json : (Js.Json.t) => GeoJSON.t = "geoJSON";
