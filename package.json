@@ -2,6 +2,7 @@
   "name": "terra-web",
   "version": "0.1.0",
   "private": true,
+  "homepage":"https://terra-claims.github.io/terra-web",
   "dependencies": {
     "@material-ui/core": "^1.1.0",
     "bs-material-ui": "https://github.com/FreshGuy32/bs-material-ui.git",
@@ -15,11 +16,14 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "prepare": "npm link bs-platform"
+    "prepare": "npm link bs-platform",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.2",
     "bs-fetch": "^0.3.0",
+    "gh-pages": "^1.2.0",
     "reason-react": "^0.4.2"
   }
 }
