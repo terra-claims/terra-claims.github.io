@@ -83,7 +83,7 @@ let make = (~addProperty, ~selectProperty, ~properties, _children) => {
       switch(self.state.ipfsHash) {
       | None => ()
       | Some(hash) => {
-        if (!Map.String.has(properties, hash)) {
+        if (Map.String.has(properties, hash)) {
           selectProperty(Map.String.getExn(properties, hash));
         } else {
           IPFS.fetchProperty(hash) 
