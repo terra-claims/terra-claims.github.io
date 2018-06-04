@@ -1,4 +1,6 @@
 [%bs.raw {|require('./IpfsField.css')|}];
+open Belt;
+
 type status =
   | Fetching
   | Empty
@@ -70,7 +72,7 @@ Js.Promise.(
 
 */
 
-let make = (~addProperty, _children) => {
+let make = (~addProperty, ~selectProperty, ~properties, _children) => {
   ...component,
   initialState: () => {ipfsHash: None, status: Empty, message: None},
   reducer: (action, state) => {
@@ -81,18 +83,22 @@ let make = (~addProperty, _children) => {
       switch(self.state.ipfsHash) {
       | None => ()
       | Some(hash) => {
-        IPFS.fetchProperty(hash) 
-        |> Js.Promise.then_(prop => {
-          addProperty(prop);
-          self.send(Succeed);
-          Js.Promise.resolve();
-        }) 
-        |> Js.Promise.catch(error => {
-          Js.log(error);
-          /* self.send(Fail(error.message)); */
-          Js.Promise.resolve();
-        })
-        |> ignore
+        if (Map.String.has(properties, hash)) {
+          selectProperty(hash);
+        } else {
+          IPFS.fetchProperty(hash) 
+          |> Js.Promise.then_(prop => {
+            addProperty(prop);
+            self.send(Succeed);
+            Js.Promise.resolve();
+          }) 
+          |> Js.Promise.catch(error => {
+            Js.log(error);
+            /* self.send(Fail(error.message)); */
+            Js.Promise.resolve();
+          })
+          |> ignore  
+        }
       }
     }})
     | Succeed => ReasonReact.Update({...state, status: Success})

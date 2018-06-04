@@ -11,15 +11,10 @@ type state = {
 type action =
   | SetMap(Leaflet.Map.t)
   | AddProperty(property)
-  | RemoveProperty(property)
-  | SelectProperty(property)
+  | RemoveProperty(string)
+  | SelectProperty(string)
   | LocateMe
   | UnselectProperty;
-
-let hashes = [
-  "QmV1zkqcFvnNWcAkCcDn6xxsj1rwszuS8mzhsDrTWxZ6Gk",
-  "QmU4GnR8vZVVwYEGafffTm8sCJw3tk96Ap5YBym1bXgKKg",
-];
 
 let component = ReasonReact.reducerComponent("App");
 
@@ -27,12 +22,20 @@ let s = ReasonReact.string;
 
 let make = _children => {
   ...component,
-  initialState: () => {properties: [], current: None, map: None},
+  initialState: () => {properties: Map.String.empty, current: None, map: None},
   reducer: (action, state) =>
     switch (action) {
     | SetMap(map) => ReasonReact.Update({...state, map: Some(map)})
-    | SelectProperty(prop) =>
-      ReasonReact.Update({...state, current: Some(prop)})
+    | SelectProperty(hash) =>
+      ReasonReact.UpdateWithSideEffects(
+        {...state, current: Map.String.get(state.properties, hash)},
+        self => switch(Map.String.get(state.properties, hash)){
+        | None => ()
+        | Some(prop) => switch(state.map) {
+          | None => ()
+          | Some(map) => map |. Leaflet.Map.fitBounds(Leaflet.GeoJSON.getBounds(prop.layer)) |. ignore
+          }
+        })
     | UnselectProperty => ReasonReact.Update({...state, current: None})
     | LocateMe =>
       ReasonReact.SideEffects(
@@ -51,7 +54,7 @@ let make = _children => {
       )
     | AddProperty(prop) =>
       ReasonReact.UpdateWithSideEffects(
-        {...state, properties: [prop, ...state.properties]},
+        {...state, properties: Map.String.set(state.properties, prop.ipfsHash, prop), current: Some(prop)},
         (
           self =>
             switch (self.state.map) {
@@ -66,15 +69,18 @@ let make = _children => {
             }
         ),
       )
-    | RemoveProperty(prop) =>
+    | RemoveProperty(ipfsHash) =>
       ReasonReact.UpdateWithSideEffects(
-        {...state, properties: List.keep(state.properties, p => p != prop)},
+        {...state, properties: Map.String.remove(state.properties, ipfsHash)},
         (
           self =>
             switch (self.state.map) {
             | None => ()
             | Some(map) =>
-              map |. Leaflet.Map.removeGeoJSON(prop.layer) |. ignore
+              switch (Map.String.get(state.properties, ipfsHash)) {
+              | None => ()
+              | Some(prop) => map |. Leaflet.Map.removeGeoJSON(prop.layer) |. ignore
+              }
             }
         ),
       )
@@ -93,7 +99,7 @@ let make = _children => {
             variant=`Title color=`Inherit className="Title">
             (s("Terra"))
           </MaterialUI.Typography>
-          <IpfsField addProperty=(property => self.send(AddProperty(property)))/>
+          <IpfsField addProperty=(property => self.send(AddProperty(property))) selectProperty=(property => self.send(SelectProperty(property)))  properties=self.state.properties/>
         </MaterialUI.Toolbar>
       </MaterialUI.AppBar>
       <MapView setMap=(map => self.send(SetMap(map))) />
