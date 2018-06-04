@@ -91,7 +91,7 @@ let make = _children => {
           </MaterialUI.IconButton>
           <MaterialUI.Typography
             variant=`Title color=`Inherit className="Title">
-            (s("Terra Claims"))
+            (s("Terra"))
           </MaterialUI.Typography>
           <IpfsField addProperty=(property => self.send(AddProperty(property)))/>
         </MaterialUI.Toolbar>
