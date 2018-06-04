@@ -16,18 +16,13 @@ type action =
   | LocateMe
   | UnselectProperty;
 
-let hashes = [
-  "QmV1zkqcFvnNWcAkCcDn6xxsj1rwszuS8mzhsDrTWxZ6Gk",
-  "QmU4GnR8vZVVwYEGafffTm8sCJw3tk96Ap5YBym1bXgKKg",
-];
-
 let component = ReasonReact.reducerComponent("App");
 
 let s = ReasonReact.string;
 
 let make = _children => {
   ...component,
-  initialState: () => {properties: [], current: None, map: None},
+  initialState: () => {properties: Map.String.empty, current: None, map: None},
   reducer: (action, state) =>
     switch (action) {
     | SetMap(map) => ReasonReact.Update({...state, map: Some(map)})
@@ -51,7 +46,7 @@ let make = _children => {
       )
     | AddProperty(prop) =>
       ReasonReact.UpdateWithSideEffects(
-        {...state, properties: [prop, ...state.properties]},
+        {...state, properties: Map.String.set(state.properties, prop.ipfsHash, prop)},
         (
           self =>
             switch (self.state.map) {
@@ -68,7 +63,7 @@ let make = _children => {
       )
     | RemoveProperty(prop) =>
       ReasonReact.UpdateWithSideEffects(
-        {...state, properties: List.keep(state.properties, p => p != prop)},
+        {...state, properties: Map.String.remove(state.properties, prop.ipfsHash)},
         (
           self =>
             switch (self.state.map) {
@@ -93,7 +88,7 @@ let make = _children => {
             variant=`Title color=`Inherit className="Title">
             (s("Terra"))
           </MaterialUI.Typography>
-          <IpfsField addProperty=(property => self.send(AddProperty(property)))/>
+          <IpfsField addProperty=(property => self.send(AddProperty(property))) selectProperty=(property => self.send(SelectProperty(property)))  properties=self.state.properties/>
         </MaterialUI.Toolbar>
       </MaterialUI.AppBar>
       <MapView setMap=(map => self.send(SetMap(map))) />

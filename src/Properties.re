@@ -5,6 +5,12 @@ type property = {
   layer: Leaflet.GeoJSON.t,
 };
 
-type properties = list(property);
+type properties = Belt.Map.String.t(property);
 
+
+
+/* let hashes = [
+  "QmV1zkqcFvnNWcAkCcDn6xxsj1rwszuS8mzhsDrTWxZ6Gk",
+  "QmU4GnR8vZVVwYEGafffTm8sCJw3tk96Ap5YBym1bXgKKg",
+]; */
 
