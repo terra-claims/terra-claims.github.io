@@ -11,8 +11,8 @@ type state = {
 type action =
   | SetMap(Leaflet.Map.t)
   | AddProperty(property)
-  | RemoveProperty(property)
-  | SelectProperty(property)
+  | RemoveProperty(string)
+  | SelectProperty(string)
   | LocateMe
   | UnselectProperty;
 
@@ -26,8 +26,16 @@ let make = _children => {
   reducer: (action, state) =>
     switch (action) {
     | SetMap(map) => ReasonReact.Update({...state, map: Some(map)})
-    | SelectProperty(prop) =>
-      ReasonReact.Update({...state, current: Some(prop)})
+    | SelectProperty(hash) =>
+      ReasonReact.UpdateWithSideEffects(
+        {...state, current: Map.String.get(state.properties, hash)},
+        self => switch(Map.String.get(state.properties, hash)){
+        | None => ()
+        | Some(prop) => switch(state.map) {
+          | None => ()
+          | Some(map) => map |. Leaflet.Map.fitBounds(Leaflet.GeoJSON.getBounds(prop.layer)) |. ignore
+          }
+        })
     | UnselectProperty => ReasonReact.Update({...state, current: None})
     | LocateMe =>
       ReasonReact.SideEffects(
@@ -46,7 +54,7 @@ let make = _children => {
       )
     | AddProperty(prop) =>
       ReasonReact.UpdateWithSideEffects(
-        {...state, properties: Map.String.set(state.properties, prop.ipfsHash, prop)},
+        {...state, properties: Map.String.set(state.properties, prop.ipfsHash, prop), current: Some(prop)},
         (
           self =>
             switch (self.state.map) {
@@ -61,15 +69,18 @@ let make = _children => {
             }
         ),
       )
-    | RemoveProperty(prop) =>
+    | RemoveProperty(ipfsHash) =>
       ReasonReact.UpdateWithSideEffects(
-        {...state, properties: Map.String.remove(state.properties, prop.ipfsHash)},
+        {...state, properties: Map.String.remove(state.properties, ipfsHash)},
         (
           self =>
             switch (self.state.map) {
             | None => ()
             | Some(map) =>
-              map |. Leaflet.Map.removeGeoJSON(prop.layer) |. ignore
+              switch (Map.String.get(state.properties, ipfsHash)) {
+              | None => ()
+              | Some(prop) => map |. Leaflet.Map.removeGeoJSON(prop.layer) |. ignore
+              }
             }
         ),
       )

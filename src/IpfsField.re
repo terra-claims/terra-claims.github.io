@@ -84,7 +84,7 @@ let make = (~addProperty, ~selectProperty, ~properties, _children) => {
       | None => ()
       | Some(hash) => {
         if (Map.String.has(properties, hash)) {
-          selectProperty(Map.String.getExn(properties, hash));
+          selectProperty(hash);
         } else {
           IPFS.fetchProperty(hash) 
           |> Js.Promise.then_(prop => {
